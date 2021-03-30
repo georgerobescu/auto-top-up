@@ -36,6 +36,12 @@ contract AutoTopUp is Ownable {
         _;
     }
 
+    /// @notice deposit funds
+    receive() external payable {
+        emit LogFundsDeposited(msg.sender, msg.value);
+    }
+
+    /// @notice withdraw fuds
     function withdraw(uint256 _amount, address payable _receiver)
         external
         onlyOwner
@@ -46,6 +52,7 @@ contract AutoTopUp is Ownable {
         emit LogFundsWithdrawn(msg.sender, _amount, _receiver);
     }
 
+    /// @notice start an autopay
     function startAutoPay(
         address payable _receiver,
         uint256 _amount,
@@ -68,6 +75,7 @@ contract AutoTopUp is Ownable {
         LogTaskSubmitted(_receiver, _amount, _balanceThreshold);
     }
 
+    /// @notice stop an autopay
     function stopAutoPay(address payable _receiver) external onlyOwner {
         require(
             _receivers.contains(_receiver),
@@ -115,6 +123,8 @@ contract AutoTopUp is Ownable {
         require(success, "AutoTopUp: exec: Receiver payment failed");
     }
 
+    /// @notice Get all receivers
+    /// @dev useful to query which autoPays to cancel
     function getReceivers()
         external
         view
@@ -123,9 +133,5 @@ contract AutoTopUp is Ownable {
         uint256 length = _receivers.length();
         currentReceivers = new address[](length);
         for (uint256 i; i < length; i++) currentReceivers[i] = _receivers.at(i);
-    }
-
-    receive() external payable {
-        emit LogFundsDeposited(msg.sender, msg.value);
     }
 }
