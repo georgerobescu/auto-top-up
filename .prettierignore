@@ -1,0 +1,8 @@
+# Ignore:
+artifacts
+cache
+coverage
+contracts/vendor
+yarn.lock
+yarn-error.log
+deployments
