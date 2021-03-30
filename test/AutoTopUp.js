@@ -16,7 +16,7 @@ let autoTopUp;
 let gelato;
 let gasPrice;
 
-describe("Gelato DCA Test", function () {
+describe("Gelato Auto Top Up Test Suite", function () {
   this.timeout(0);
   before("tests", async () => {
     await deployments.fixture();
@@ -183,7 +183,7 @@ describe("Gelato DCA Test", function () {
         gasPrice: gasPrice,
       });
 
-    console.log(`Fee: ${ethers.utils.formatEther(fee)}`);
+    // console.log(`Fee: ${ethers.utils.formatEther(fee)}`);
 
     const payload = autoTopUp.interface.encodeFunctionData("exec", [
       receiverAddress,

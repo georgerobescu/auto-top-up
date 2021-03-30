@@ -156,8 +156,7 @@ interface IGelato {
 
     function stakeExecutor(address _gelatoCore) external payable;
 
-    function unstakeExecutor(address _gelatoCore, address payable _to)
-        external;
+    function unstakeExecutor(address _gelatoCore, address payable _to) external;
 
     function multiReassignProviders(
         address _gelatoCore,
