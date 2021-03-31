@@ -39,9 +39,14 @@ describe("Gelato Auto Top Up Test Suite", function () {
 
     await autoTopUpFactory
       .connect(owner)
-      .newAutoTopUp(receiverAddress, amount, balanceThreshold, {
-        value: deposit,
-      });
+      .newAutoTopUp(
+        [receiverAddress, userAddress],
+        [amount, amount],
+        [balanceThreshold, balanceThreshold],
+        {
+          value: deposit,
+        }
+      );
 
     const block = await ethers.provider.getBlock();
     const topics = autoTopUpFactory.filters.LogContractDeployed().topics;

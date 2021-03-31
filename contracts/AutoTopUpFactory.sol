@@ -3,8 +3,9 @@ pragma solidity 0.8.0;
 
 import {EnumerableSet} from "./openzeppelin/utils/EnumerableSet.sol";
 import {AutoTopUp} from "./AutoTopUp.sol";
+import {Ownable} from "./openzeppelin/access/Ownable.sol";
 
-contract AutoTopUpFactory {
+contract AutoTopUpFactory is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     mapping(address => AutoTopUp) public autoTopUpByOwner;
@@ -21,18 +22,38 @@ contract AutoTopUpFactory {
     }
 
     function newAutoTopUp(
-        address payable _receiver,
-        uint256 _amount,
-        uint256 _balanceThreshold
+        address payable[] calldata _receivers,
+        uint256[] calldata _amounts,
+        uint256[] calldata _balanceThresholds
     ) external payable returns (AutoTopUp autoTopUp) {
-        require(autoTopUpByOwner[msg.sender] == AutoTopUp(payable(address(0))));
+        require(
+            autoTopUpByOwner[msg.sender] == AutoTopUp(payable(address(0))),
+            "AutoTopUpFactory: newAutoTopUp: Already created AutoTopUp"
+        );
+        require(
+            _receivers.length == _amounts.length &&
+                _receivers.length == _balanceThresholds.length,
+            "AutoTopUpFactory: newAutoTopUp: Input length mismatch"
+        );
 
         autoTopUp = new AutoTopUp(gelato);
-        autoTopUp.startAutoPay{value: msg.value}(
-            _receiver,
-            _amount,
-            _balanceThreshold
-        );
+        for (uint256 i; i < _receivers.length; i++) {
+            autoTopUp.startAutoPay(
+                _receivers[i],
+                _amounts[i],
+                _balanceThresholds[i]
+            );
+        }
+
+        if (msg.value > 0) {
+            (bool success, ) =
+                payable(address(autoTopUp)).call{value: msg.value}("");
+            require(
+                success,
+                "AutoTopUpFactory: newAutoTopUp: ETH transfer failed"
+            );
+        }
+
         autoTopUp.transferOwnership(msg.sender);
 
         autoTopUpByOwner[msg.sender] = autoTopUp;
@@ -53,5 +74,10 @@ contract AutoTopUpFactory {
         currentAutoTopUps = new address[](length);
         for (uint256 i; i < length; i++)
             currentAutoTopUps[i] = _autoTopUps.at(i);
+    }
+
+    function withdraw(uint256 _amount, address payable _to) external onlyOwner {
+        (bool success, ) = _to.call{value: _amount}("");
+        require(success, "AutoTopUpFactory: withdraw: ETH transfer failed");
     }
 }
