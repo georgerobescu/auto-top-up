@@ -9,21 +9,27 @@ contract AutoTopUp is Ownable {
 
     address payable public immutable gelato;
 
+    struct TopUpData {
+        uint256 amount;
+        uint256 balanceThreshold;
+    }
+
     EnumerableSet.AddressSet internal _receivers;
     mapping(address => bytes32) public hashes;
+    mapping(address => TopUpData) public receiverDetails;
 
-    event LogFundsDeposited(address indexed _sender, uint256 _amount);
+    event LogFundsDeposited(address indexed sender, uint256 amount);
     event LogFundsWithdrawn(
-        address indexed _sender,
-        uint256 _amount,
-        address _receiver
+        address indexed sender,
+        uint256 amount,
+        address receiver
     );
     event LogTaskSubmitted(
-        address indexed _receiver,
-        uint256 _amount,
-        uint256 _balance
+        address indexed receiver,
+        uint256 amount,
+        uint256 balanceThreshold
     );
-    event LogTaskCancelled(address indexed _receiver, bytes32 _hash);
+    event LogTaskCancelled(address indexed receiver, bytes32 cancelledHash);
 
     constructor(address payable _gelato) {
         gelato = _gelato;
@@ -69,6 +75,10 @@ contract AutoTopUp is Ownable {
         _receivers.add(_receiver);
 
         hashes[_receiver] = keccak256(abi.encode(_amount, _balanceThreshold));
+        receiverDetails[_receiver] = TopUpData({
+            amount: _amount,
+            balanceThreshold: _balanceThreshold
+        });
 
         LogTaskSubmitted(_receiver, _amount, _balanceThreshold);
     }
@@ -91,6 +101,7 @@ contract AutoTopUp is Ownable {
         _receivers.remove(_receiver);
 
         delete hashes[_receiver];
+        delete receiverDetails[_receiver];
 
         LogTaskCancelled(_receiver, storedHash);
     }
@@ -103,9 +114,8 @@ contract AutoTopUp is Ownable {
         uint256 _balanceThreshold,
         uint256 _fee
     ) external gelatofy {
-        bytes32 topUpHash = keccak256(abi.encode(_amount, _balanceThreshold));
         require(
-            hashes[_receiver] == topUpHash,
+            isScheduled(_receiver, _amount, _balanceThreshold),
             "AutoTopUp: exec: Hash invalid"
         );
         require(
@@ -131,5 +141,15 @@ contract AutoTopUp is Ownable {
         uint256 length = _receivers.length();
         currentReceivers = new address[](length);
         for (uint256 i; i < length; i++) currentReceivers[i] = _receivers.at(i);
+    }
+
+    function isScheduled(
+        address payable _receiver,
+        uint256 _amount,
+        uint256 _balanceThreshold
+    ) public view returns (bool) {
+        return
+            hashes[_receiver] ==
+            keccak256(abi.encode(_amount, _balanceThreshold));
     }
 }

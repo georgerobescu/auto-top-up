@@ -1,11 +1,12 @@
 const { sleep } = require("@gelatonetwork/core");
+const { network } = require("hardhat");
 
 module.exports = async (hre) => {
   /*if (hre.network.name=='ropsten') {
       return   // dumb hack to deploy after oracle aggregator
   }*/
   if (hre.network.name === "mainnet") {
-    console.log("\n\n Deploying GelatoDCA to mainnet. Hit ctrl + c to abort");
+    console.log("\n\n Deploying AutoTopUp to mainnet. Hit ctrl + c to abort");
     console.log("❗ AutoTopUp DEPLOYMENT: VERIFY");
     await sleep(10000);
   }
@@ -16,9 +17,9 @@ module.exports = async (hre) => {
   await deploy("AutoTopUp", {
     from: deployer,
     args: [hre.network.config.Gelato],
-    gasPrice: hre.ethers.utils.parseUnits("10", "gwei"),
+    gasPrice: network.config.gasPrice,
     gasLimit: 5000000,
   });
 };
 
-module.exports.tags = ["GelatoDCA"];
+module.exports.tags = ["AutoTopUp"];

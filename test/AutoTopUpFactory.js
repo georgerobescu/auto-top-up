@@ -12,7 +12,7 @@ let receiverAddress;
 let executorAddress = network.config.GelatoExecutor;
 let autoTopUpFactory;
 
-describe("Gelato Auto Top Up Test Suite", function () {
+describe("Gelato Auto Top Up Factory Test Suite", function () {
   this.timeout(0);
   before("tests", async () => {
     await deployments.fixture();

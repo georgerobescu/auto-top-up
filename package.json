@@ -11,7 +11,8 @@
     "lint:fix": "eslint --cache --fix . && solhint --fix contracts/**/*.sol",
     "test": "npx hardhat test",
     "test:gas": "REPORT_GAS=1 npx hardhat test",
-    "debug": "DEBUG=true yarn compile && npx hardhat test"
+    "debug": "DEBUG=true yarn compile && npx hardhat test",
+    "verify-auto-top-up": "npx hardhat verify --network ropsten $ADDRESS '0xCc4CcD69D31F9FfDBD3BFfDe49c6aA886DaB98d9'"
   },
   "author": "hilmarx & superarius",
   "license": "ISC",
@@ -21,9 +22,9 @@
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
     "chai": "^4.2.0",
     "ethereum-waffle": "^3.3.0",
-    "ethers": "^5.0.32",
+    "ethers": "^5.1.0",
     "hardhat": "^2.0.11",
-    "hardhat-deploy": "0.7.0-beta.50",
+    "hardhat-deploy": "0.7.0-beta.56",
     "hardhat-deploy-ethers": "0.3.0-beta.7",
     "hardhat-gas-reporter": "1.0.4",
     "solc": "^0.8.0"

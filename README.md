@@ -9,4 +9,4 @@ Auto Top Up multiple ETH addresses automatically once they go below a certain ET
 
 ## Tests
 
-Run: `yarn test` 
+Run: `yarn test`
