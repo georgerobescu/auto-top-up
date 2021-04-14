@@ -60,7 +60,7 @@ module.exports = {
       chainId: 1,
       url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_ID}`,
       ...mainnetAddresses,
-      gasPrice: 145000000000, // 80 Gwei
+      gasPrice: 85000000000, // 85000000000 Gwei
     },
     ropsten: {
       accounts: DEPLOYER_PK ? [DEPLOYER_PK] : [],
