@@ -19,6 +19,7 @@ Deploy your own AutoTopUp Instance using the `AutoTopUpFactory`, send some ETH t
 ## Tutorial - Deploy your own AutoTopUp Contract that tops up multiple addresses automatically on your behalf:
 
 1. Visit the AutoTopUpFactory Page on [Etherscan](https://etherscan.io/address/0x711809c48641b8a38ab64c3293c5b1aa905bd4ca#writeContract) 
+![](images/write.png)
 2. Connect to your Web3 Wallet and click `newAutoTopUp`
 ![](images/newAutoTopUp.png)  
 3. Fill in the details of `newAutoTopUp`. 
@@ -27,7 +28,6 @@ Deploy your own AutoTopUp Instance using the `AutoTopUpFactory`, send some ETH t
    3. _amounts: An array of amounts that define with how much ETH you want these respective addresses to be topped up
    4. _balanceThreshold: An array of amounts that define below which balances you want the respective addresses to be topped up with the respective amount
 4. Click Write and submit the transaction
-![](images/write.png)
 5. Git clone this repo and run `npx hardhat verify --network mainnet  {YOUR_AUTO_TOP_UP_ADDRESS} "0x3CACa7b48D0573D793d3b0279b5F0029180E83b6"` to verify your AutoTopUp contracts address on Etherscan
 6. If you want to stop one of the auto topus, visit your AutoTopUp instance on Etherscan and input the receiver address in the `_stopAutoPay` function
 ![](images/stopAutoPay.png)
