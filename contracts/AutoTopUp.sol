@@ -4,17 +4,19 @@ pragma solidity 0.8.3;
 import {
     EnumerableSet
 } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {
+    SafeERC20, IERC20
+} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Gelatofied} from "./Gelatofied.sol";
 
-contract AutoTopUp is Ownable {
+contract AutoTopUp is Ownable, Gelatofied {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     struct TopUpData {
         uint256 amount;
         uint256 balanceThreshold;
     }
-
-    address payable public immutable gelato;
 
     EnumerableSet.AddressSet internal _receivers;
     mapping(address => bytes32) public hashes;
@@ -33,14 +35,8 @@ contract AutoTopUp is Ownable {
     );
     event LogTaskCancelled(address indexed receiver, bytes32 cancelledHash);
 
-    modifier gelatofy() {
-        require(msg.sender == gelato, "AutoTopUp: Only gelato");
-        _;
-    }
-
-    constructor(address payable _gelato) {
-        gelato = _gelato;
-    }
+    // solhint-disable-next-line no-empty-blocks
+    constructor(address payable _gelato) Gelatofied(_gelato) {}
 
     /// @notice deposit funds
     receive() external payable {
@@ -115,7 +111,7 @@ contract AutoTopUp is Ownable {
         uint256 _amount,
         uint256 _balanceThreshold,
         uint256 _fee
-    ) external gelatofy {
+    ) external gelatofy(_fee, ETH) {
         require(
             isScheduled(_receiver, _amount, _balanceThreshold),
             "AutoTopUp: exec: Hash invalid"
@@ -127,9 +123,6 @@ contract AutoTopUp is Ownable {
 
         bool success;
         (success, ) = _receiver.call{value: _amount}("");
-        require(success, "AutoTopUp: exec: Receiver payment failed");
-
-        (success, ) = gelato.call{value: _fee}("");
         require(success, "AutoTopUp: exec: Receiver payment failed");
     }
 
